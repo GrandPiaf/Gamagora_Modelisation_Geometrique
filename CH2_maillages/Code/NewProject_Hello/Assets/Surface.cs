@@ -54,7 +54,6 @@ public class Surface : MonoBehaviour
                 float y = j * offsetY;
                 float z = 0;
                 vertices[index] = new Vector3(x, y, z);
-                Debug.Log("(" + x + ", " + y + ", " + z + ")");
             }
         }
 

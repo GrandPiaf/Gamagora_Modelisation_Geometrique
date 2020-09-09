@@ -338,11 +338,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1826069169}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d73972a4f5d035549a3939d86948bfbd, type: 3}
+  m_Script: {fileID: 11500000, guid: 5e54a3fc98e00b04ba2532dc42487cf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nbColumns: 4
-  nbLines: 2
-  from: {x: 0, y: 0, z: 0}
-  to: {x: 10, y: 10, z: 0}
+  rayon: 3
+  height: 5
+  meridien: 6
   mat: {fileID: 10302, guid: 0000000000000000f000000000000000, type: 0}
