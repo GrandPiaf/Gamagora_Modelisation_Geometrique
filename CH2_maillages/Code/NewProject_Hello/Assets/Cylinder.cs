@@ -35,7 +35,7 @@ public class Cylinder : MonoBehaviour
 
     void createSurface()
     {
-        Vector3[] vertices = new Vector3[2 * meridien /*+ 2*/];     // 2 times each merdiens + 2 central vertices
+        Vector3[] vertices = new Vector3[2 * meridien + 2];     // 2 times each merdiens + 2 central vertices
         int[] triangles = new int[2 * meridien * 6 /*+ 2 * meridien*/]; // 2 times each meridiens for triangle + 2 times merdiens for limit triangles
 
         //Compute teta angle offset
@@ -52,22 +52,26 @@ public class Cylinder : MonoBehaviour
             //Lower vertex
             float x = Convert.ToSingle( rayon * Math.Cos(angle) );
             float y = Convert.ToSingle( rayon * Math.Sin(angle) );
-            float zL = Convert.ToSingle( - height / 2 );
+            float zL = -height / 2;
 
             vertices[index] = new Vector3(x, y, zL);
-            Debug.Log("(" + x + ", " + y + ", " + zL + ")");
 
             //Upper vertex
-            float zU = Convert.ToSingle( height / 2 );
+            float zU = height / 2;
 
             vertices[index + 1] = new Vector3(x, y, zU);
-            Debug.Log("(" + x + ", " + y + ", " + zU + ")");
 
+        }
+
+        // Central vertices
+        {
+            int index = 2 * meridien;
+            vertices[index] = new Vector3(0, 0, -height / 2);
+            vertices[index + 1] = new Vector3(0, 0, height / 2);
         }
 
 
         //Generating triangles
-        
         for (int m = 0; m < meridien - 1; ++m)  // Minus 1 to snap the cylinder correctly
         {
             int index = 2 * m;
@@ -88,8 +92,8 @@ public class Cylinder : MonoBehaviour
             triangles[indexTri + 5] = B;
         }
 
+        // To snap the cylinder around
         {
-            // To snap the cylinder around
             int A = 2 * meridien - 2;
             int B = 0;
             int C = 2 * meridien - 1;
@@ -106,6 +110,16 @@ public class Cylinder : MonoBehaviour
             triangles[indexTri + 5] = B;
         }
 
+        // Central surfaces
+        for (int m = 0; m < meridien - 1; ++m)
+        {
+            
+        }
+
+        // To snap the cylinder around
+        {
+            
+        }
 
         Mesh msh = new Mesh();                          // Création et remplissage du Mesh
 
