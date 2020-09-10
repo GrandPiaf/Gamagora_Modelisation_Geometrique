@@ -8,15 +8,18 @@ using UnityEngine.UI;
 public class Cylinder : MonoBehaviour
 {
 
-    [Range(0, 100)]
+    [Range(1, 100)]
     public float rayon;
 
-    [Range(0, 100)]
+    [Range(1, 100)]
     public float height;
 
-    [Range(0, 100)]
+    [Range(3, 100)]
     public int meridien;
 
+    float oldRayon = 0;
+    float oldHeight = 0;
+    int oldMeridien = 0;
 
     public Material mat;
 
@@ -27,7 +30,7 @@ public class Cylinder : MonoBehaviour
         gameObject.AddComponent<MeshFilter>();          // Creation d'un composant MeshFilter qui peut ensuite être visualisé
         gameObject.AddComponent<MeshRenderer>();
 
-        createSurface();
+        //createSurface();
 
         gameObject.GetComponent<MeshRenderer>().material = mat;
     }
@@ -90,8 +93,6 @@ public class Cylinder : MonoBehaviour
             int C = index + 1;
             int D = index + 3;
 
-            Debug.Log(indexTri);
-
             triangles[indexTri] = A;
             triangles[indexTri + 1] = B;
             triangles[indexTri + 2] = C;
@@ -109,8 +110,6 @@ public class Cylinder : MonoBehaviour
             int B = 0;
             int C = 2 * meridien - 1;
             int D = 1;
-
-            Debug.Log(indexTri);
 
             triangles[indexTri] = A;
             triangles[indexTri + 1] = B;
@@ -183,6 +182,18 @@ public class Cylinder : MonoBehaviour
 
         gameObject.GetComponent<MeshFilter>().mesh = msh;           // Remplissage du Mesh et ajout du matériel
 
+    }
+
+    void Update()
+    {
+        if(oldRayon != rayon || oldHeight != height || oldMeridien != meridien)
+        {
+            createSurface();
+
+            oldRayon = rayon;
+            oldHeight = height;
+            oldMeridien = meridien;
+        }
     }
 
 }

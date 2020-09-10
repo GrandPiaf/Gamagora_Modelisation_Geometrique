@@ -7,14 +7,17 @@ using UnityEngine.UI;
 public class Surface : MonoBehaviour
 {
 
-    [Range(0, 100)]
+    [Range(1, 100)]
     public int nbColumns;
 
-    [Range(0, 100)]
+    [Range(1, 100)]
     public int nbLines;
 
     public Vector3 from;
     public Vector3 to;
+
+    int oldNbColumns = 0;
+    int oldNbLines = 0;
 
     public Material mat;
 
@@ -25,7 +28,7 @@ public class Surface : MonoBehaviour
         gameObject.AddComponent<MeshFilter>();          // Creation d'un composant MeshFilter qui peut ensuite être visualisé
         gameObject.AddComponent<MeshRenderer>();
 
-        createSurface();
+        //createSurface();
 
         gameObject.GetComponent<MeshRenderer>().material = mat;
     }
@@ -86,6 +89,17 @@ public class Surface : MonoBehaviour
 
         gameObject.GetComponent<MeshFilter>().mesh = msh;           // Remplissage du Mesh et ajout du matériel
 
+    }
+
+    void Update()
+    {
+        if (oldNbColumns != nbColumns || oldNbLines != nbLines)
+        {
+            createSurface();
+
+            oldNbColumns = nbColumns;
+            oldNbLines = nbLines;
+        }
     }
 
 }
