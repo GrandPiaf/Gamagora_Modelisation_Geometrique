@@ -35,13 +35,23 @@ public class Cylinder : MonoBehaviour
 
     void createSurface()
     {
-        Vector3[] vertices = new Vector3[2 * meridien + 2];     // 2 times each merdiens + 2 central vertices
-        int[] triangles = new int[2 * meridien * 6 /*+ 2 * meridien*/]; // 2 times each meridiens for triangle + 2 times merdiens for limit triangles
+        int nbVertices = 2 * meridien + 2;
+        int nbTriangles = 2 * meridien * 3 + 2 * meridien * 3;
+
+        Vector3[] vertices = new Vector3[nbVertices]; //Central + border vertices
+        int[] triangles = new int[nbTriangles]; //Central + border triangles
 
         //Compute teta angle offset
         double tetaOffset = (2 * Math.PI) / meridien;
 
-        //Generating vertices
+        //For lower vertices
+        float zL = -height / 2;
+
+        //For upper vertices
+        float zU = height / 2;
+
+
+        //Generating central vertices
         for (int m = 0; m < meridien; ++m)
         {
             int index = 2 * m;
@@ -49,29 +59,28 @@ public class Cylinder : MonoBehaviour
             //Compute real angle
             double angle = tetaOffset * m;
 
-            //Lower vertex
+            //Coordinates
             float x = Convert.ToSingle( rayon * Math.Cos(angle) );
             float y = Convert.ToSingle( rayon * Math.Sin(angle) );
-            float zL = -height / 2;
 
+            //Lower vertex
             vertices[index] = new Vector3(x, y, zL);
 
             //Upper vertex
-            float zU = height / 2;
-
             vertices[index + 1] = new Vector3(x, y, zU);
 
         }
 
-        // Central vertices
-        {
-            int index = 2 * meridien;
-            vertices[index] = new Vector3(0, 0, -height / 2);
-            vertices[index + 1] = new Vector3(0, 0, height / 2);
-        }
+        //Adding border vertices
+        int centralLowerindex = 2 * meridien;
+        int centralUpperindex = 2 * meridien + 1;
+        vertices[centralLowerindex] = new Vector3(0, 0, zL);
+        vertices[centralUpperindex] = new Vector3(0, 0, zU);
 
 
-        //Generating triangles
+
+        //Generating central triangles
+        int indexTri = 0;
         for (int m = 0; m < meridien - 1; ++m)  // Minus 1 to snap the cylinder correctly
         {
             int index = 2 * m;
@@ -81,7 +90,7 @@ public class Cylinder : MonoBehaviour
             int C = index + 1;
             int D = index + 3;
 
-            int indexTri = 2 * m * 6;
+            Debug.Log(indexTri);
 
             triangles[indexTri] = A;
             triangles[indexTri + 1] = B;
@@ -90,6 +99,8 @@ public class Cylinder : MonoBehaviour
             triangles[indexTri + 3] = D;
             triangles[indexTri + 4] = C;
             triangles[indexTri + 5] = B;
+
+            indexTri += 6;
         }
 
         // To snap the cylinder around
@@ -99,7 +110,7 @@ public class Cylinder : MonoBehaviour
             int C = 2 * meridien - 1;
             int D = 1;
 
-            int indexTri = 2 * (meridien - 1) * 6;
+            Debug.Log(indexTri);
 
             triangles[indexTri] = A;
             triangles[indexTri + 1] = B;
@@ -108,18 +119,62 @@ public class Cylinder : MonoBehaviour
             triangles[indexTri + 3] = D;
             triangles[indexTri + 4] = C;
             triangles[indexTri + 5] = B;
+
+            indexTri += 6;
         }
 
-        // Central surfaces
-        for (int m = 0; m < meridien - 1; ++m)
+        //Adding border triangles
         {
-            
+
+            //Lower
+            for (int m = 0; m < meridien - 1; ++m)
+            {
+                int B = 2 * m;
+                int C = B + 2;
+
+                triangles[indexTri] = centralLowerindex;
+                triangles[indexTri + 1] = C;
+                triangles[indexTri + 2] = B;
+
+                indexTri += +3;
+            }
+            //Wrap around
+            {
+                int B = 2 * meridien - 2;
+                int C = 0;
+
+                triangles[indexTri] = centralLowerindex;
+                triangles[indexTri + 1] = C;
+                triangles[indexTri + 2] = B;
+
+                indexTri += +3;
+            }
+
+            //Upper
+            for (int m = 0; m < meridien - 1; ++m)
+            {
+                int B = 2 * m + 1;
+                int C = B + 2;
+
+                triangles[indexTri] = centralUpperindex;
+                triangles[indexTri + 1] = B;
+                triangles[indexTri + 2] = C;
+
+                indexTri += +3;
+            }
+            //Wrap around
+            {
+                int B = 2 * meridien - 1;
+                int C = 1;
+
+                triangles[indexTri] = centralUpperindex;
+                triangles[indexTri + 1] = B;
+                triangles[indexTri + 2] = C;
+
+                indexTri += +3;
+            }
         }
 
-        // To snap the cylinder around
-        {
-            
-        }
 
         Mesh msh = new Mesh();                          // Création et remplissage du Mesh
 

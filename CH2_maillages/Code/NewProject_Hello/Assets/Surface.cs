@@ -70,12 +70,12 @@ public class Surface : MonoBehaviour
                 int D = C + 1;
 
                 triangles[index    ] = A;
-                triangles[index + 1] = C;
-                triangles[index + 2] = B;
+                triangles[index + 1] = B;
+                triangles[index + 2] = C;
 
                 triangles[index + 3] = D;
-                triangles[index + 4] = B;
-                triangles[index + 5] = C;
+                triangles[index + 4] = C;
+                triangles[index + 5] = B;
             }
         }
 
