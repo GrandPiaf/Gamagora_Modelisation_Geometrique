@@ -15,11 +15,11 @@ public class Cylinder : MonoBehaviour
     public float height;
 
     [Range(3, 100)]
-    public int meridien;
+    public int meridiens;
 
     float oldRayon = 0;
     float oldHeight = 0;
-    int oldMeridien = 0;
+    int oldMeridiens = 0;
 
     public Material mat;
 
@@ -38,14 +38,14 @@ public class Cylinder : MonoBehaviour
 
     void createSurface()
     {
-        int nbVertices = 2 * meridien + 2;
-        int nbTriangles = 2 * meridien * 3 + 2 * meridien * 3;
+        int nbVertices = 2 * meridiens + 2;
+        int nbTriangles = 2 * meridiens * 3 + 2 * meridiens * 3;
 
         Vector3[] vertices = new Vector3[nbVertices]; //Central + border vertices
         int[] triangles = new int[nbTriangles]; //Central + border triangles
 
         //Compute teta angle offset
-        double tetaOffset = (2 * Math.PI) / meridien;
+        double tetaOffset = (2 * Math.PI) / meridiens;
 
         //For lower vertices
         float zL = -height / 2;
@@ -55,7 +55,7 @@ public class Cylinder : MonoBehaviour
 
 
         //Generating central vertices
-        for (int m = 0; m < meridien; ++m)
+        for (int m = 0; m < meridiens; ++m)
         {
             int index = 2 * m;
 
@@ -63,8 +63,8 @@ public class Cylinder : MonoBehaviour
             double angle = tetaOffset * m;
 
             //Coordinates
-            float x = Convert.ToSingle( rayon * Math.Cos(angle) );
-            float y = Convert.ToSingle( rayon * Math.Sin(angle) );
+            float x = rayon *  Convert.ToSingle(Math.Cos(angle) );
+            float y = rayon *  Convert.ToSingle(Math.Sin(angle) );
 
             //Lower vertex
             vertices[index] = new Vector3(x, y, zL);
@@ -75,8 +75,8 @@ public class Cylinder : MonoBehaviour
         }
 
         //Adding border vertices
-        int centralLowerindex = 2 * meridien;
-        int centralUpperindex = 2 * meridien + 1;
+        int centralLowerindex = 2 * meridiens;
+        int centralUpperindex = 2 * meridiens + 1;
         vertices[centralLowerindex] = new Vector3(0, 0, zL);
         vertices[centralUpperindex] = new Vector3(0, 0, zU);
 
@@ -84,7 +84,7 @@ public class Cylinder : MonoBehaviour
 
         //Generating central triangles
         int indexTri = 0;
-        for (int m = 0; m < meridien - 1; ++m)  // Minus 1 to snap the cylinder correctly
+        for (int m = 0; m < meridiens - 1; ++m)  // Minus 1 to snap the cylinder correctly
         {
             int index = 2 * m;
 
@@ -106,9 +106,9 @@ public class Cylinder : MonoBehaviour
 
         // To snap the cylinder around
         {
-            int A = 2 * meridien - 2;
+            int A = 2 * meridiens - 2;
             int B = 0;
-            int C = 2 * meridien - 1;
+            int C = 2 * meridiens - 1;
             int D = 1;
 
             triangles[indexTri] = A;
@@ -126,7 +126,7 @@ public class Cylinder : MonoBehaviour
         {
 
             //Lower
-            for (int m = 0; m < meridien - 1; ++m)
+            for (int m = 0; m < meridiens - 1; ++m)
             {
                 int B = 2 * m;
                 int C = B + 2;
@@ -139,7 +139,7 @@ public class Cylinder : MonoBehaviour
             }
             //Wrap around
             {
-                int B = 2 * meridien - 2;
+                int B = 2 * meridiens - 2;
                 int C = 0;
 
                 triangles[indexTri] = centralLowerindex;
@@ -150,7 +150,7 @@ public class Cylinder : MonoBehaviour
             }
 
             //Upper
-            for (int m = 0; m < meridien - 1; ++m)
+            for (int m = 0; m < meridiens - 1; ++m)
             {
                 int B = 2 * m + 1;
                 int C = B + 2;
@@ -163,7 +163,7 @@ public class Cylinder : MonoBehaviour
             }
             //Wrap around
             {
-                int B = 2 * meridien - 1;
+                int B = 2 * meridiens - 1;
                 int C = 1;
 
                 triangles[indexTri] = centralUpperindex;
@@ -186,13 +186,13 @@ public class Cylinder : MonoBehaviour
 
     void Update()
     {
-        if(oldRayon != rayon || oldHeight != height || oldMeridien != meridien)
+        if(oldRayon != rayon || oldHeight != height || oldMeridiens != meridiens)
         {
             createSurface();
 
             oldRayon = rayon;
             oldHeight = height;
-            oldMeridien = meridien;
+            oldMeridiens = meridiens;
         }
     }
 
