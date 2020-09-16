@@ -94,11 +94,11 @@ public class Cylinder : MonoBehaviour
             int D = index + 3;
 
             triangles[indexTri] = A;
-            triangles[indexTri + 1] = B;
+            triangles[indexTri + 1] = D;
             triangles[indexTri + 2] = C;
 
             triangles[indexTri + 3] = D;
-            triangles[indexTri + 4] = C;
+            triangles[indexTri + 4] = A;
             triangles[indexTri + 5] = B;
 
             indexTri += 6;
@@ -112,11 +112,11 @@ public class Cylinder : MonoBehaviour
             int D = 1;
 
             triangles[indexTri] = A;
-            triangles[indexTri + 1] = B;
+            triangles[indexTri + 1] = D;
             triangles[indexTri + 2] = C;
 
             triangles[indexTri + 3] = D;
-            triangles[indexTri + 4] = C;
+            triangles[indexTri + 4] = A;
             triangles[indexTri + 5] = B;
 
             indexTri += 6;
