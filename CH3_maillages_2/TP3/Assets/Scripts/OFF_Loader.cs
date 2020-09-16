@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using UnityEngine;
 
@@ -8,26 +9,35 @@ public class OFF_Loader : MonoBehaviour
 {
 
     public Material mat;
+    public string fileName;
+
+    string oldFileName = "";
 
 
-    void Start()
+    void Update()
     {
-        ReadOFF("Assets/OFFMeshes/cube.off");
+        if (oldFileName != fileName)
+        {
+            ReadOFF("Assets/OFFMeshes/" + fileName);
+            oldFileName = fileName;
+        }
     }
 
-    void ReadOFF(string fileName)
+    void ReadOFF(string path)
     {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
 
+        Mesh msh = new Mesh();
 
         /** Reading file **/
         try
         {
-            // Create an instance of StreamReader to read from a file.
-            // The using statement also closes the StreamReader.
-            using (StreamReader sr = new StreamReader(fileName))
+            // Opening file
+            using (StreamReader sr = new StreamReader(path))
             {
+
+                // Read first line "OFF"
                 string line = sr.ReadLine();
                 if (!line.Equals("OFF"))
                 {
@@ -35,33 +45,81 @@ public class OFF_Loader : MonoBehaviour
                     return;
                 }
 
+
+                // Read second lines : file data
                 line = sr.ReadLine();
-
-                uint[] fileData = Array.ConvertAll(line.Split(' '), uint.Parse);
-
-                if(fileData.Length != 3)
+                int[] fileData = Array.ConvertAll(line.Split(' '), int.Parse);
+                if (fileData.Length != 3)
                 {
-                    Debug.Log("Cannot read file correctly (vertices, triangles & edge are incorrect)");
+                    Debug.Log("Cannot read file correctly (wrong parameters number)");
                     return;
                 }
 
-                uint verticesCount = fileData[0];
-                uint trianglesCount = fileData[1];
-                uint edgeCount = fileData[2];
+                int verticesCount = fileData[0];
+                int trianglesCount = fileData[1];
+                int edgeCount = fileData[2];
 
                 Debug.Log("Vertices : " + verticesCount);
                 Debug.Log("Triangles : " + trianglesCount);
                 Debug.Log("Edges : " + edgeCount);
 
-                // Read and display lines from the file until the end of
-                // the file is reached.
-                while ((line = sr.ReadLine()) != null)
+
+                // Create arrays
+                Vector3[] vertices = new Vector3[verticesCount];
+                int[] triangles = new int[trianglesCount * 3];
+
+
+                // Read vertices
+                for (int v = 0; v < verticesCount; ++v)
                 {
-                    //Debug.Log(line);
+                    line = sr.ReadLine();
+                    string[] lineSplit = line.Split(' ');
+                    if (lineSplit.Length < 3)
+                    {
+                        Debug.Log("Cannot read vertex " + v + " correctly (wrong coordinates number)");
+                        return;
+                    }
 
-                    
+                    NumberFormatInfo format = new NumberFormatInfo();
+                    format.NumberDecimalSeparator = ".";
+                    format.NegativeSign = "-";
 
+                    vertices[v] = new Vector3();
+                    float.TryParse(lineSplit[0], NumberStyles.Float, format, out vertices[v].x);
+                    float.TryParse(lineSplit[1], NumberStyles.Float, format, out vertices[v].y);
+                    float.TryParse(lineSplit[2], NumberStyles.Float, format, out vertices[v].z);
                 }
+
+
+                // Read triangles
+                for (int t = 0; t < trianglesCount * 3; t += 3)
+                {
+                    line = sr.ReadLine();
+                    string[] lineSplit = line.Split(' ');
+
+                    if (lineSplit.Length < 4)
+                    {
+                        Debug.Log("Cannot read triangle " + t + " correctly (wrong index number)");
+                        return;
+                    }
+
+                    int indexNumber;
+                    int.TryParse(lineSplit[0], out indexNumber);
+
+                    if (indexNumber != 3)
+                    {
+                        Debug.Log("Index numbers triangle " + t + " incorrect");
+                        return;
+                    }
+
+                    int.TryParse(lineSplit[1], out triangles[t]);
+                    int.TryParse(lineSplit[2], out triangles[t + 1]);
+                    int.TryParse(lineSplit[3], out triangles[t + 2]);
+                }
+
+                msh.vertices = vertices;
+                msh.triangles = triangles;
+
             }
         }
         catch (Exception e)
@@ -71,19 +129,13 @@ public class OFF_Loader : MonoBehaviour
             Debug.Log(e.Message);
         }
 
-        Vector3[] vertices = new Vector3[3];
-        int[] triangles = new int[3];
-
-
-
-        Mesh msh = new Mesh();
-
-
-        msh.vertices = vertices;
-        msh.triangles = triangles;
-
 
         gameObject.GetComponent<MeshFilter>().mesh = msh;           // Remplissage du Mesh et ajout du matériel
         gameObject.GetComponent<MeshRenderer>().material = mat;
+    }
+
+    void traceMaillage()
+    {
+
     }
 }
