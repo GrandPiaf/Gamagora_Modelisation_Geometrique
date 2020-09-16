@@ -18,6 +18,9 @@ public class Sphere : MonoBehaviour
     [Range(2, 100)]
     public int paralleles;
 
+    [Range(0, 360)]
+    public float cutAngle;
+
     float oldRayon = 0;
     int oldMeridiens = 0;
     int oldParalleles = 0;
