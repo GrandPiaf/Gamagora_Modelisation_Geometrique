@@ -73,6 +73,10 @@ Cinématique, contrôle d'une chaîne :
 
 
 
+## CH3 - Maillages 2
+
+Angle dièdre : angle entre 2 triangles connectés par une arête
+
 
 
 
