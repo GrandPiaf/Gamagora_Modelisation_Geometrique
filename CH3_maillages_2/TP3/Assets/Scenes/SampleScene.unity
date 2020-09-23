@@ -436,9 +436,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 595ad117aab3e4f4a92182dc8196c5e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mat: {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
+  mat: {fileID: 2100000, guid: 41ca5c657558eb54b8da5fd590ae1530, type: 2}
   fileName: bunny.off
-  mustCenterMesh: 1
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
