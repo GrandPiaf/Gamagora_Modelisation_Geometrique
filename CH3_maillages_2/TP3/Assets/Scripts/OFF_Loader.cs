@@ -18,8 +18,8 @@ public class OFF_Loader : MonoBehaviour
 
 
     /** Private data **/
-    // Center point of Mesh
-    private Vector3 centerPoint;
+    // Gravity center point of Mesh
+    private Vector3 gravityCenterPoint;
 
 
     /** For runtime processing **/
@@ -27,7 +27,7 @@ public class OFF_Loader : MonoBehaviour
     private bool oldCenterMesh;
 
     void Start() {
-        centerPoint = Vector3.zero;
+        gravityCenterPoint = Vector3.zero;
 
         // This is in order to trigger ReadOFF and centeringMesh in the Update method
         oldCenterMesh = !mustCenterMesh;    
@@ -50,8 +50,10 @@ public class OFF_Loader : MonoBehaviour
 
     // To center the mesh around it's own gravity point
     private void centeringMesh() {
-        // Gravity point is compute in ReadOFF : it avoids reading every point again
-        throw new NotImplementedException();
+        // Gravity point is compute in ReadOFF : it avoids reading every point each time
+
+
+
     }
 
     // Read file at "path" and compute it's own gravity point
@@ -122,11 +124,11 @@ public class OFF_Loader : MonoBehaviour
                     float.TryParse(lineSplit[2], NumberStyles.Float, format, out vertices[v].z);
 
                     // Sum of points for further centering
-                    centerPoint += vertices[v];
+                    gravityCenterPoint += vertices[v];
                 }
 
-                // Getting real coordinates of centered point
-                centerPoint /= verticesCount;
+                // Getting real coordinates of gravity center point
+                gravityCenterPoint /= verticesCount;
 
 
                 // Read triangles
@@ -181,7 +183,7 @@ public class OFF_Loader : MonoBehaviour
         Debug.Log("Name : " + fileName);
         Debug.Log("Vertices count : " + m.vertexCount);
         Debug.Log("Triangles count : " + (m.triangles.Length / 3) );
-        Debug.Log("Centering point: " + centerPoint);
+        Debug.Log("Gravity center point: " + gravityCenterPoint);
 
         if (detailed) {
 
