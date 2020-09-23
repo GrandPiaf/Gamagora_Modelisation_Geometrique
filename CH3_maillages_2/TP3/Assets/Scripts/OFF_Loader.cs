@@ -7,23 +7,55 @@ using UnityEngine;
 
 public class OFF_Loader : MonoBehaviour
 {
-
+    /** Data from Unity's Inspector **/
+    // Rendering material
     public Material mat;
+
+    // Filename to read
     public string fileName;
+    // To centralize the mesh (or not)
+    public bool mustCenterMesh;
 
-    string oldFileName = "";
 
+    /** Private data **/
+    // Center point of Mesh
+    private Vector3 centerPoint;
+
+
+    /** For runtime processing **/
+    private string oldFileName = "";
+    private bool oldCenterMesh;
+
+    void Start() {
+        centerPoint = Vector3.zero;
+
+        // This is in order to trigger ReadOFF and centeringMesh in the Update method
+        oldCenterMesh = !mustCenterMesh;    
+    }
 
     void Update()
     {
-        if (oldFileName != fileName)
+        if (oldFileName != fileName || oldCenterMesh != mustCenterMesh)
         {
             ReadOFF("Assets/OFFMeshes/" + fileName);
+
+            if (mustCenterMesh) {
+                centeringMesh();
+            }
+
             oldFileName = fileName;
+            oldCenterMesh = mustCenterMesh;
         }
     }
 
-    void ReadOFF(string path)
+    // To center the mesh around it's own gravity point
+    private void centeringMesh() {
+        // Gravity point is compute in ReadOFF : it avoids reading every point again
+        throw new NotImplementedException();
+    }
+
+    // Read file at "path" and compute it's own gravity point
+    private void ReadOFF(string path)
     {
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
@@ -88,7 +120,13 @@ public class OFF_Loader : MonoBehaviour
                     float.TryParse(lineSplit[0], NumberStyles.Float, format, out vertices[v].x);
                     float.TryParse(lineSplit[1], NumberStyles.Float, format, out vertices[v].y);
                     float.TryParse(lineSplit[2], NumberStyles.Float, format, out vertices[v].z);
+
+                    // Sum of points for further centering
+                    centerPoint += vertices[v];
                 }
+
+                // Getting real coordinates of centered point
+                centerPoint /= verticesCount;
 
 
                 // Read triangles
@@ -134,7 +172,8 @@ public class OFF_Loader : MonoBehaviour
         gameObject.GetComponent<MeshRenderer>().material = mat;
     }
 
-    public void traceMaillage()
+    // Taking a boolean parameter to print detailed vertices and triangles
+    public void traceMaillage(bool detailed)
     {
         Mesh m = gameObject.GetComponent<MeshFilter>().mesh;
 
@@ -142,15 +181,20 @@ public class OFF_Loader : MonoBehaviour
         Debug.Log("Name : " + fileName);
         Debug.Log("Vertices count : " + m.vertexCount);
         Debug.Log("Triangles count : " + (m.triangles.Length / 3) );
+        Debug.Log("Centering point: " + centerPoint);
 
-        Debug.Log("*** Enumerating vertices in format : INDEX | (x, y, z) ***");
-        for (int i = 0; i < m.vertexCount; ++i) {
-            Debug.Log(i + " | " + m.vertices[i]);
-        }
+        if (detailed) {
 
-        Debug.Log("*** Enumerating triangles in format : A - B - C ***");
-        for (int i = 0; i < m.triangles.Length; i += 3) {
-            Debug.Log(m.triangles[i] + " - " + m.triangles[i + 1] + " - " + m.triangles[i + 2]);
+            Debug.Log("*** Enumerating vertices in format : INDEX | (x, y, z) ***");
+            for (int i = 0; i < m.vertexCount; ++i) {
+                Debug.Log(i + " | " + m.vertices[i]);
+            }
+
+            Debug.Log("*** Enumerating triangles in format : A - B - C ***");
+            for (int i = 0; i < m.triangles.Length; i += 3) {
+                Debug.Log(m.triangles[i] + " - " + m.triangles[i + 1] + " - " + m.triangles[i + 2]);
+            }
+
         }
 
     }
