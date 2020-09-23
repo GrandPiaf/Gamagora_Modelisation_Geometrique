@@ -59,9 +59,9 @@ public class OFF_Loader : MonoBehaviour
                 int trianglesCount = fileData[1];
                 int edgeCount = fileData[2];
 
-                Debug.Log("Vertices : " + verticesCount);
-                Debug.Log("Triangles : " + trianglesCount);
-                Debug.Log("Edges : " + edgeCount);
+                //Debug.Log("Vertices : " + verticesCount);
+                //Debug.Log("Triangles : " + trianglesCount);
+                //Debug.Log("Edges : " + edgeCount);
 
 
                 // Create arrays
@@ -134,8 +134,24 @@ public class OFF_Loader : MonoBehaviour
         gameObject.GetComponent<MeshRenderer>().material = mat;
     }
 
-    void traceMaillage()
+    public void traceMaillage()
     {
+        Mesh m = gameObject.GetComponent<MeshFilter>().mesh;
+
+        Debug.Log("Printing mesh data");
+        Debug.Log("Name : " + fileName);
+        Debug.Log("Vertices count : " + m.vertexCount);
+        Debug.Log("Triangles count : " + (m.triangles.Length / 3) );
+
+        Debug.Log("*** Enumerating vertices in format : INDEX | (x, y, z) ***");
+        for (int i = 0; i < m.vertexCount; ++i) {
+            Debug.Log(i + " | " + m.vertices[i]);
+        }
+
+        Debug.Log("*** Enumerating triangles in format : A - B - C ***");
+        for (int i = 0; i < m.triangles.Length; i += 3) {
+            Debug.Log(m.triangles[i] + " - " + m.triangles[i + 1] + " - " + m.triangles[i + 2]);
+        }
 
     }
 }
