@@ -13,47 +13,57 @@ public class OFF_Loader : MonoBehaviour
 
     // Filename to read
     public string fileName;
-    // To centralize the mesh (or not)
-    public bool mustCenterMesh;
+
 
 
     /** Private data **/
     // Gravity center point of Mesh
     private Vector3 gravityCenterPoint;
 
+    // Squared magnitude of further point of the mesh from center
+    private float squaredMagnitudePoint; // using magnitude beacause since our mesh is centered, the magnitude is the distance from the center
+
 
     /** For runtime processing **/
     private string oldFileName = "";
-    private bool oldCenterMesh;
 
     void Start() {
 
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
-
-        gravityCenterPoint = Vector3.zero;
-
-        // This is in order to trigger ReadOFF and centeringMesh in the Update method
-        oldCenterMesh = !mustCenterMesh;    
     }
 
     void Update()
     {
-        if (oldFileName != fileName || oldCenterMesh != mustCenterMesh)
+        if (oldFileName != fileName)
         {
+            resetValues();
+
             ReadOFF("Assets/OFFMeshes/" + fileName);
-
-            if (mustCenterMesh) {
-                centeringMesh();
-            }
-
             oldFileName = fileName;
-            oldCenterMesh = mustCenterMesh;
         }
     }
 
+    private void resetValues() {
+        gravityCenterPoint = Vector3.zero;
+        squaredMagnitudePoint = 0;
+    }
+
+    // Normalizing mesh
+    private void normalizeMesh(ref Vector3[] vertices) {
+
+        // Normalizing with real magnitude
+        // 1 sqrt is better than vertices.Lenght sqrt !
+        float realMagnitude = Mathf.Sqrt(squaredMagnitudePoint);
+
+        for (int i = 0; i < vertices.Length; i++) {
+            vertices[i] /= realMagnitude;
+        }
+
+    }
+
     // To center the mesh around it's own gravity point
-    private void centeringMesh() {
+    private void centeringMesh(ref Vector3[] vertices) {
         // Gravity point is computed in ReadOFF : it avoids reading every point each time
 
         Mesh m = gameObject.GetComponent<MeshFilter>().mesh;
@@ -61,14 +71,10 @@ public class OFF_Loader : MonoBehaviour
         // Get translation vector
         Vector3 translate = Vector3.zero - gravityCenterPoint;
 
-        Vector3[] vertexList = m.vertices;
-
         // Translate every vertex
-        for (int i = 0; i < m.vertexCount; i++) {
-            vertexList[i] += translate;
+        for (int i = 0; i < vertices.Length; i++) {
+            vertices[i] += translate;
         }
-
-        m.vertices = vertexList;
 
     }
 
@@ -139,10 +145,22 @@ public class OFF_Loader : MonoBehaviour
 
                     // Sum of points for further centering
                     gravityCenterPoint += vertices[v];
+
+                    // Getting the furthest point
+                    if (vertices[v].sqrMagnitude > squaredMagnitudePoint) {
+                        squaredMagnitudePoint = vertices[v].sqrMagnitude;
+                    }
+
                 }
 
                 // Getting real coordinates of gravity center point
                 gravityCenterPoint /= verticesCount;
+
+                // Centering the mesh around Vector3.zero
+                centeringMesh(ref vertices);
+
+                //Normlaizing mesh in range [-1;1]
+                normalizeMesh(ref vertices);
 
 
                 // Read triangles
