@@ -438,6 +438,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 41ca5c657558eb54b8da5fd590ae1530, type: 2}
   fileName: bunny.off
+  unityNormals: 0
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
