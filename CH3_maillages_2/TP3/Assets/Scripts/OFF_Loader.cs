@@ -27,6 +27,10 @@ public class OFF_Loader : MonoBehaviour
     private bool oldCenterMesh;
 
     void Start() {
+
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.AddComponent<MeshRenderer>();
+
         gravityCenterPoint = Vector3.zero;
 
         // This is in order to trigger ReadOFF and centeringMesh in the Update method
@@ -50,17 +54,27 @@ public class OFF_Loader : MonoBehaviour
 
     // To center the mesh around it's own gravity point
     private void centeringMesh() {
-        // Gravity point is compute in ReadOFF : it avoids reading every point each time
+        // Gravity point is computed in ReadOFF : it avoids reading every point each time
 
+        Mesh m = gameObject.GetComponent<MeshFilter>().mesh;
 
+        // Get translation vector
+        Vector3 translate = Vector3.zero - gravityCenterPoint;
+
+        Vector3[] vertexList = m.vertices;
+
+        // Translate every vertex
+        for (int i = 0; i < m.vertexCount; i++) {
+            vertexList[i] += translate;
+        }
+
+        m.vertices = vertexList;
 
     }
 
     // Read file at "path" and compute it's own gravity point
     private void ReadOFF(string path)
     {
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
 
         Mesh msh = new Mesh();
 
@@ -170,13 +184,15 @@ public class OFF_Loader : MonoBehaviour
         }
 
 
-        gameObject.GetComponent<MeshFilter>().mesh = msh;           // Remplissage du Mesh et ajout du matériel
+        // Remplissage du Mesh et ajout du matériel
+        gameObject.GetComponent<MeshFilter>().mesh = msh;          
         gameObject.GetComponent<MeshRenderer>().material = mat;
     }
 
     // Taking a boolean parameter to print detailed vertices and triangles
     public void traceMaillage(bool detailed)
     {
+
         Mesh m = gameObject.GetComponent<MeshFilter>().mesh;
 
         Debug.Log("Printing mesh data");
