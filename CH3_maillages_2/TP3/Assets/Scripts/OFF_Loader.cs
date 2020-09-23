@@ -43,6 +43,8 @@ public class OFF_Loader : MonoBehaviour
 
             ReadOFF("Assets/OFFMeshes/" + fileName);
             oldFileName = fileName;
+
+            WriteOFF("Assets/OFFMeshesResults/" + fileName);
         }
 
     }
@@ -81,127 +83,6 @@ public class OFF_Loader : MonoBehaviour
 
     }
 
-    // Read file at "path" and compute it's own gravity point
-    private void ReadOFF(string path)
-    {
-
-        Mesh msh = new Mesh();
-
-        /** Reading file **/
-        // Opening file
-        using (StreamReader sr = new StreamReader(path))
-        {
-
-            // Read first line "OFF"
-            string line = sr.ReadLine();
-            if (!line.Equals("OFF"))
-            {
-                Debug.Log("Not a OFF file !");
-                return;
-            }
-
-
-            // Read second lines : file data
-            line = sr.ReadLine();
-            int[] fileData = Array.ConvertAll(line.Split(' '), int.Parse);
-            if (fileData.Length != 3)
-            {
-                Debug.Log("Cannot read file correctly (wrong parameters number)");
-                return;
-            }
-
-            int verticesCount = fileData[0];
-            int trianglesCount = fileData[1];
-            int edgeCount = fileData[2];
-
-            //Debug.Log("Vertices : " + verticesCount);
-            //Debug.Log("Triangles : " + trianglesCount);
-            //Debug.Log("Edges : " + edgeCount);
-
-
-            // Create arrays
-            Vector3[] vertices = new Vector3[verticesCount];
-            int[] triangles = new int[trianglesCount * 3];
-
-
-            // Read vertices
-            for (int v = 0; v < verticesCount; ++v)
-            {
-                line = sr.ReadLine();
-                string[] lineSplit = line.Split(' ');
-                if (lineSplit.Length < 3)
-                {
-                    Debug.Log("Cannot read vertex " + v + " correctly (wrong coordinates number)");
-                    return;
-                }
-
-                NumberFormatInfo format = new NumberFormatInfo();
-                format.NumberDecimalSeparator = ".";
-                format.NegativeSign = "-";
-
-                vertices[v] = new Vector3();
-                float.TryParse(lineSplit[0], NumberStyles.Float, format, out vertices[v].x);
-                float.TryParse(lineSplit[1], NumberStyles.Float, format, out vertices[v].y);
-                float.TryParse(lineSplit[2], NumberStyles.Float, format, out vertices[v].z);
-
-                // Sum of points for further centering
-                gravityCenterPoint += vertices[v];
-
-                // Getting the furthest point
-                if (vertices[v].sqrMagnitude > squaredMagnitudePoint) {
-                    squaredMagnitudePoint = vertices[v].sqrMagnitude;
-                }
-
-            }
-
-            // Getting real coordinates of gravity center point
-            gravityCenterPoint /= verticesCount;
-
-            // Centering the mesh around Vector3.zero
-            centeringMesh(ref vertices);
-
-            //Normlaizing mesh in range [-1;1]
-            normalizeMesh(ref vertices);
-
-
-            // Read triangles
-            for (int t = 0; t < trianglesCount * 3; t += 3)
-            {
-                line = sr.ReadLine();
-                string[] lineSplit = line.Split(' ');
-
-                if (lineSplit.Length < 4)
-                {
-                    Debug.Log("Cannot read triangle " + t + " correctly (wrong index number)");
-                    return;
-                }
-
-                int indexNumber;
-                int.TryParse(lineSplit[0], out indexNumber);
-
-                if (indexNumber != 3)
-                {
-                    Debug.Log("Index numbers triangle " + t + " incorrect");
-                    return;
-                }
-
-                int.TryParse(lineSplit[1], out triangles[t]);
-                int.TryParse(lineSplit[2], out triangles[t + 1]);
-                int.TryParse(lineSplit[3], out triangles[t + 2]);
-            }
-
-            msh.vertices = vertices;
-            msh.triangles = triangles;
-
-            computeNormals(ref msh);
-
-        }
-
-
-        // Remplissage du Mesh et ajout du matériel
-        gameObject.GetComponent<MeshFilter>().mesh = msh;          
-        gameObject.GetComponent<MeshRenderer>().material = mat;
-    }
 
     private void computeNormals(ref Mesh msh) {
 
@@ -260,6 +141,154 @@ public class OFF_Loader : MonoBehaviour
         msh.SetNormals(normmals);
 
     }
+
+
+    // Read file at "path" and compute it's own gravity point
+    private void ReadOFF(string path) {
+
+        Mesh msh = new Mesh();
+
+        /** Reading file **/
+        // Opening file
+        using (StreamReader sr = new StreamReader(path)) {
+
+            // Read first line "OFF"
+            string line = sr.ReadLine();
+            if (!line.Equals("OFF")) {
+                Debug.Log("Not a OFF file !");
+                return;
+            }
+
+
+            // Read second lines : file data
+            line = sr.ReadLine();
+            int[] fileData = Array.ConvertAll(line.Split(' '), int.Parse);
+            if (fileData.Length != 3) {
+                Debug.Log("Cannot read file correctly (wrong parameters number)");
+                return;
+            }
+
+            int verticesCount = fileData[0];
+            int trianglesCount = fileData[1];
+            int edgeCount = fileData[2];
+
+            //Debug.Log("Vertices : " + verticesCount);
+            //Debug.Log("Triangles : " + trianglesCount);
+            //Debug.Log("Edges : " + edgeCount);
+
+
+            // Create arrays
+            Vector3[] vertices = new Vector3[verticesCount];
+            int[] triangles = new int[trianglesCount * 3];
+
+
+            // Read vertices
+            for (int v = 0; v < verticesCount; ++v) {
+                line = sr.ReadLine();
+                string[] lineSplit = line.Split(' ');
+                if (lineSplit.Length < 3) {
+                    Debug.Log("Cannot read vertex " + v + " correctly (wrong coordinates number)");
+                    return;
+                }
+
+                NumberFormatInfo format = new NumberFormatInfo();
+                format.NumberDecimalSeparator = ".";
+                format.NegativeSign = "-";
+
+                vertices[v] = new Vector3();
+                float.TryParse(lineSplit[0], NumberStyles.Float, format, out vertices[v].x);
+                float.TryParse(lineSplit[1], NumberStyles.Float, format, out vertices[v].y);
+                float.TryParse(lineSplit[2], NumberStyles.Float, format, out vertices[v].z);
+
+                // Sum of points for further centering
+                gravityCenterPoint += vertices[v];
+
+                // Getting the furthest point
+                if (vertices[v].sqrMagnitude > squaredMagnitudePoint) {
+                    squaredMagnitudePoint = vertices[v].sqrMagnitude;
+                }
+
+            }
+
+            // Getting real coordinates of gravity center point
+            gravityCenterPoint /= verticesCount;
+
+            // Centering the mesh around Vector3.zero
+            centeringMesh(ref vertices);
+
+            //Normlaizing mesh in range [-1;1]
+            normalizeMesh(ref vertices);
+
+
+            // Read triangles
+            for (int t = 0; t < trianglesCount * 3; t += 3) {
+                line = sr.ReadLine();
+                string[] lineSplit = line.Split(' ');
+
+                if (lineSplit.Length < 4) {
+                    Debug.Log("Cannot read triangle " + t + " correctly (wrong index number)");
+                    return;
+                }
+
+                int indexNumber;
+                int.TryParse(lineSplit[0], out indexNumber);
+
+                if (indexNumber != 3) {
+                    Debug.Log("Index numbers triangle " + t + " incorrect");
+                    return;
+                }
+
+                int.TryParse(lineSplit[1], out triangles[t]);
+                int.TryParse(lineSplit[2], out triangles[t + 1]);
+                int.TryParse(lineSplit[3], out triangles[t + 2]);
+            }
+
+            msh.vertices = vertices;
+            msh.triangles = triangles;
+
+            computeNormals(ref msh);
+
+        }
+
+
+        // Remplissage du Mesh et ajout du matériel
+        gameObject.GetComponent<MeshFilter>().mesh = msh;
+        gameObject.GetComponent<MeshRenderer>().material = mat;
+    }
+
+
+
+    // Writing mesh file
+    private void WriteOFF(string path) {
+
+        Mesh msh = gameObject.GetComponent<MeshFilter>().mesh;
+
+        using (StreamWriter sw = new StreamWriter(path)) {
+
+            sw.WriteLine("OFF");
+            sw.WriteLine(msh.vertexCount + " " + (msh.triangles.Length / 3) + " " + msh.triangles.Length);
+
+            for (int v = 0; v < msh.vertexCount; v++) {
+                //sw.WriteLine(msh.vertices[v].x + " " + msh.vertices[v].y + " " + msh.vertices[v].z);
+
+                sw.Write(msh.vertices[v].x.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                sw.Write(" ");
+                sw.Write(msh.vertices[v].y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                sw.Write(" ");
+                sw.Write(msh.vertices[v].z.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                sw.Write("\n");
+            }
+
+            for (int t = 0; t < msh.triangles.Length; t+=3) {
+                sw.WriteLine("3 " + msh.triangles[t] + " " + msh.triangles[t+1] + " " + msh.triangles[t+2]);
+            }
+
+            sw.Close();
+
+        }
+
+    }
+
 
     // Taking a boolean parameter to print detailed vertices and triangles
     public void traceMaillage(bool detailed)
