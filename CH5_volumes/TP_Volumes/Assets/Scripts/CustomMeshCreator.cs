@@ -56,7 +56,7 @@ public class CustomMeshCreator
         return msh;
     }
 
-    static public Mesh CreateCylinder(int meridiens, int width, int height, int rayon) {
+    static public Mesh CreateCylinder(int meridiens, float height, float rayon) {
 
         int nbVertices = 2 * meridiens + 2;
         int nbTriangles = 2 * meridiens * 3 + 2 * meridiens * 3;
@@ -201,7 +201,7 @@ public class CustomMeshCreator
     }
 
 
-    static public Mesh CreateSphere(int meridiens, int paralleles, int rayon) {
+    static public Mesh CreateSphere(int meridiens, int paralleles, float rayon) {
 
         int nbVertices = paralleles * meridiens + 2; //Center + North & South
         int nbTriangles = ((paralleles - 1) * meridiens * 2 + meridiens * 2) * 3; // (Center + Borders) * 3

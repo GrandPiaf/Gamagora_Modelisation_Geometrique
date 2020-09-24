@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using UnityEngine;
 
-public class OFF_Loader : MonoBehaviour
+public class OFFLoader : MonoBehaviour
 {
     /** Data from Unity's Inspector **/
     // Rendering material

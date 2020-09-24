@@ -255,10 +255,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 857983460}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f247d629bf2ccc448c9f5d7afd79930, type: 3}
+  m_Script: {fileID: 11500000, guid: b5d5f8e99f82ab54b871c650b0958541, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mat: {fileID: 2100000, guid: 0d754fdd7e9165b449c214b24bac4d47, type: 2}
+  edgeSize: 0.3
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
