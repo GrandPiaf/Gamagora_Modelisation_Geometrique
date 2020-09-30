@@ -28,14 +28,14 @@ public class BBox
 
         foreach (Sphere sphere in sphereList) {
 
-            minBorder = Vector3.Min(minBorder, sphere.origin - sphere.radius * 1.1f * Vector3.one);
-            maxBorder = Vector3.Max(maxBorder, sphere.origin + sphere.radius * 1.1f * Vector3.one);
+            minBorder = Vector3.Min(minBorder, sphere.origin - sphere.radius * 1.2f * Vector3.one);
+            maxBorder = Vector3.Max(maxBorder, sphere.origin + sphere.radius * 1.2f * Vector3.one);
 
         }
 
     }
 
-    public bool ContainsCube(Vector3 cubeCenter) {
+    public bool Union(Vector3 cubeCenter) {
         foreach (Sphere sphere in sphereList) {
 
             if(Vector3.Distance(cubeCenter, sphere.origin) <= sphere.radius) {
@@ -45,4 +45,33 @@ public class BBox
         }
         return false;
     }
+
+
+    public bool Intersection(Vector3 cubeCenter) {
+
+        foreach (Sphere sphere in sphereList) {
+
+            if (Vector3.Distance(cubeCenter, sphere.origin) > sphere.radius) {
+                return false;
+            }
+
+        }
+
+        return true;
+    }
+
+    public int Potential(Vector3 cubeCenter) {
+
+        int potentialSum = 0;
+
+        foreach (Sphere sphere in sphereList) {
+            if (Vector3.Distance(cubeCenter, sphere.origin) <= sphere.radius) {
+                potentialSum += sphere.potential;
+            }
+        }
+
+        return potentialSum;
+    }
+
+
 }
