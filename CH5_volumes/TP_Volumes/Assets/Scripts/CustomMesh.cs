@@ -19,6 +19,9 @@ public class CustomMesh : MonoBehaviour
 
         gameObject.GetComponent<MeshFilter>().mesh = OFFLoader.ReadOFF("Assets/OFFMeshes/" + filename);
         OFFLoader.WriteOFF(gameObject.GetComponent<MeshFilter>().mesh, "Assets/OFFMeshesResults/new" + filename);
+
+        OFFLoader.traceMaillage(gameObject.GetComponent<MeshFilter>().mesh, false);
+    
     }
 
 }

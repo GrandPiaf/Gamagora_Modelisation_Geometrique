@@ -240,13 +240,23 @@ public class OFFLoader
 
 
     // Taking a boolean parameter to print detailed vertices and triangles
-    static public void traceMaillage(ref Mesh msh, bool detailed)
+    static public void traceMaillage(Mesh msh, bool detailed)
     {
 
         Debug.Log("Printing mesh data");
         //Debug.Log("Name : " + fileName);
         Debug.Log("Vertices count : " + msh.vertexCount);
         Debug.Log("Triangles count : " + (msh.triangles.Length / 3) );
+
+        /*
+         * Count edges
+         */
+        Debug.Log("Total Edge count :");
+        Debug.Log("Edge count per face / min : / max :");
+        Debug.Log("Edge count per vertex / min : / max :");
+        Debug.Log("Edge count shared by none or one face :");
+
+
         //Debug.Log("Gravity center point: " + gravityCenterPoint);
 
         if (detailed) {
