@@ -251,10 +251,12 @@ public class OFFLoader
         /*
          * Count edges
          */
-        Debug.Log("Total Edge count :");
-        Debug.Log("Edge count per face / min : / max :");
-        Debug.Log("Edge count per vertex / min : / max :");
-        Debug.Log("Edge count shared by none or one face :");
+        Counter edges = new Counter(msh);
+
+        Debug.Log("Total Edge count : " + edges.getEdgeNumber().ToString());
+        Debug.Log("Edge count per face 3 ");
+        Debug.Log("Edge count per vertex / min : " + edges.getMinEdgeCountPerVertex().ToString() + " / max : " + edges.getMaxEdgeCountPerVertex().ToString());
+        Debug.Log("Edge count shared by none or one face : " + edges.getEdgeCountSharedNoneOrOneFace().ToString());
 
 
         //Debug.Log("Gravity center point: " + gravityCenterPoint);
@@ -271,6 +273,115 @@ public class OFFLoader
                 Debug.Log(msh.triangles[i] + " - " + msh.triangles[i + 1] + " - " + msh.triangles[i + 2]);
             }
 
+        }
+
+    }
+
+    private class Counter {
+
+        private class Edge {
+            private int item1;
+            private int item2;
+
+            public Edge(int i1, int i2) {
+                this.item1 = i1;
+                this.item2 = i2;
+            }
+
+            public override int GetHashCode() {
+                return this.item1.GetHashCode() ^ this.item2.GetHashCode();
+            }
+
+            public override bool Equals(object obj) {
+                return Equals(obj as Edge);
+            }
+
+            public bool Equals(Edge obj) {
+                return (this.item1 == obj.item1 && this.item2 == obj.item2)
+                    || (this.item1 == obj.item2 && this.item2 == obj.item1);
+            }
+        }
+
+        // Mesh
+        private Mesh mesh;
+        
+        // Edge count
+        private Dictionary<Edge, int> edgeCount;
+
+        // Edge count per vertex
+        private int[] edgeCountPerVertex;
+        private int minEdgeCountVertex;
+        private int maxEdgeCountVertex;
+
+        public Counter(Mesh mesh) {
+
+            this.mesh = mesh;
+            this.edgeCount = new Dictionary<Edge, int>();
+
+            this.edgeCountPerVertex = new int[mesh.vertexCount];
+            this.minEdgeCountVertex = int.MaxValue;
+            this.maxEdgeCountVertex = int.MinValue;
+
+            BuildLists(this.mesh);
+
+        }
+
+        private void BuildLists(Mesh mesh) {
+
+            // Edge count
+            for (int i = 0; i < mesh.triangles.Length; i += 3) {
+                Edge edgeA = new Edge(mesh.triangles[i], mesh.triangles[i + 1]);
+                Edge edgeB = new Edge(mesh.triangles[i + 1], mesh.triangles[i + 2]);
+                Edge edgeC = new Edge(mesh.triangles[i + 2], mesh.triangles[i]);
+
+                AddAndCount(edgeA);
+                AddAndCount(edgeB);
+                AddAndCount(edgeC);
+
+
+                this.edgeCountPerVertex[mesh.triangles[i]]++;
+                this.edgeCountPerVertex[mesh.triangles[i + 1]]++;
+                this.edgeCountPerVertex[mesh.triangles[i + 2]]++;
+            }
+
+            //Edge count per vertex
+            foreach (int v in this.edgeCountPerVertex) {
+                this.minEdgeCountVertex = Math.Min(this.minEdgeCountVertex, v);
+                this.maxEdgeCountVertex = Math.Max(this.maxEdgeCountVertex, v);
+            }
+
+        }
+
+        private void AddAndCount(Edge edge) {
+            if (!edgeCount.ContainsKey(edge)) {
+                edgeCount.Add(edge, 0);
+            }
+            edgeCount[edge]++;
+        }
+
+        internal int getEdgeCountSharedNoneOrOneFace() {
+            int count = 0;
+            
+            foreach (KeyValuePair<Edge, int> kvp in this.edgeCount) {
+                if (kvp.Value != 2) {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        internal int getMinEdgeCountPerVertex() {
+            return this.minEdgeCountVertex;
+        }
+
+        internal int getMaxEdgeCountPerVertex() {
+            return this.maxEdgeCountVertex;
+        }
+
+        // Return total edge number
+        internal int getEdgeNumber() {
+            return edgeCount.Count;
         }
 
     }

@@ -316,9 +316,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 857983461}
-  - component: {fileID: 857983462}
   - component: {fileID: 857983464}
   - component: {fileID: 857983463}
+  - component: {fileID: 857983462}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -378,7 +378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98c4046e8c1ddbb4d877413ab8ccedee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  edgeSize: 1
+  edgeSize: 0.28
   threshold: 200
 --- !u!1 &963194225
 GameObject:
@@ -481,7 +481,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1854275350
 BoxCollider:
   m_ObjectHideFlags: 0
