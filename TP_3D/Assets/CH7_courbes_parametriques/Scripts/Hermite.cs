@@ -1,11 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Hermite : MonoBehaviour
 {
-
-    public GameObject testPoint;
 
     public GameObject P0;
     public GameObject P1;
@@ -16,12 +15,38 @@ public class Hermite : MonoBehaviour
     [Range(0, 1)]
     public float u;
 
+    [Range(2, 100)]
+    public int precision = 2;
+
     void OnValidate() {
 
-        Vector3 PU = F1(u) * P0.transform.position;
+        // Test point position
+        Vector3 PU = HermitePoint(u);
+        transform.position = PU;
 
-        testPoint.transform.position = PU;
+        ComputeLineRenderer();
 
+    }
+
+    private void ComputeLineRenderer() {
+
+        LineRenderer lr = GetComponent<LineRenderer>();
+
+        List<Vector3> consecutivePosition = new List<Vector3>(precision + 1);
+
+        float Uoffset = 1.0f / (precision);
+
+        for (int i = 0; i < precision + 1; i++) {
+            consecutivePosition.Add(HermitePoint(Uoffset * i));
+        }
+
+
+        lr.positionCount = precision + 1;
+        lr.SetPositions(consecutivePosition.ToArray());
+    }
+
+    private Vector3 HermitePoint(float u) {
+        return F1(u) * P0.transform.position + F2(u) * P1.transform.position + F3(u) * V0 + F4(u) * V1;
     }
 
     private float F1(float u) {
@@ -33,11 +58,11 @@ public class Hermite : MonoBehaviour
     }
 
     private float F3(float u) {
-        return 2 * Mathf.Pow(u, 3) - 3 * Mathf.Pow(u, 2) + 1;
+        return Mathf.Pow(u, 3) - 2 * Mathf.Pow(u, 2) + u;
     }
 
     private float F4(float u) {
-        return 2 * Mathf.Pow(u, 3) - 3 * Mathf.Pow(u, 2) + 1;
+        return Mathf.Pow(u, 3) - Mathf.Pow(u, 2);
     }
 
 }
