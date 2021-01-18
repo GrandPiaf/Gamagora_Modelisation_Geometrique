@@ -7,4 +7,4 @@ Cours de Modélisation Géométrique du Master 2 Gamagora à ICOM Lyon.
   - simplification
   - courbes paramétriques
   - surfaces implicites
-  - ubdivison : algorithme de Chaikin
+  - subdivison : algorithme de Chaikin
